@@ -9,7 +9,6 @@ This project is a solution for the Stori Challenge. It processes CSV files conta
 - [Project Structure](#project-structure)
 - [Endpoints](#endpoints)
 - [Environment Variables](#environment-variables)
-- [License](#license)
 
 ## Installation
 
@@ -83,4 +82,7 @@ The following environment variables need to be set:
 - `DB_NAME`: Database name
 - `APP_PASSWORD_SMTP` : Password generated for use the SMTP server 
 - `SENDER_EMAIL` : Sender email (davidsaldarriaga.pardo@gmail.com)
+
+## Snapshots
+
 
