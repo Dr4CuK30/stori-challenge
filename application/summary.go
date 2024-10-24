@@ -8,6 +8,7 @@ import (
 	"stori-challenge-v1/infrastructure/utils"
 	"strconv"
 	"strings"
+	"sync"
 )
 
 type SummaryResponse struct {
@@ -56,25 +57,24 @@ func (s *SummaryService) ProcessTransactionsCsv(transactions [][]string, csvName
 		monthName := utils.GetMonthByUint8(uint8(month))
 		transactionsQuantityByMonth[monthName]++
 	}
-	fmt.Println("Saving data")
 	summary := SummaryResponse{
 		TotalBalance:                totalBalance,
 		AverageCreditAmount:         averageCreditAmount,
 		AverageDebitAmount:          averageDebitAmount,
 		TransactionsQuantityByMonth: transactionsQuantityByMonth,
 	}
-	err := s.sendSummaryByEmail(summary, email)
-	if err != nil {
-		return SummaryResponse{}, err
-	}
-	err = s.TransactionRepository.Save(process)
-	if err != nil {
-		return SummaryResponse{}, err
-	}
+	var wg sync.WaitGroup
+	go s.sendSummaryByEmail(summary, email, &wg)
+	wg.Add(1)
+	fmt.Println("Saving data")
+	go s.TransactionRepository.Save(process, &wg)
+	wg.Add(1)
+	wg.Wait()
+	fmt.Println("todo bien")
 	return summary, nil
 }
 
-func (s *SummaryService) sendSummaryByEmail(summary SummaryResponse, email string) error {
+func (s *SummaryService) sendSummaryByEmail(summary SummaryResponse, email string, wg *sync.WaitGroup) error {
 	emailBody := fmt.Sprintf(
 		"<b>Hello,</b><br><br>Here is your account summary:<br><br>"+
 			"Total Balance: $%.2f<br>"+
@@ -106,5 +106,6 @@ func (s *SummaryService) sendSummaryByEmail(summary SummaryResponse, email strin
 		"</div>"
 	subject := "Stori: Transactions summary"
 	s.EmailResource.SendEmail(email, subject, emailBody)
+	wg.Done()
 	return nil
 }

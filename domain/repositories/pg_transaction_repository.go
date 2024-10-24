@@ -7,13 +7,14 @@ import (
 	"log"
 	"os"
 	"stori-challenge-v1/domain/entities"
+	"sync"
 )
 
 type PgTransactionRepository struct {
 	db *sql.DB
 }
 
-func (r *PgTransactionRepository) Save(process entities.Process) error {
+func (r *PgTransactionRepository) Save(process entities.Process, wg *sync.WaitGroup) error {
 	defer r.db.Close()
 	db := r.getConnection()
 	var id int
@@ -24,13 +25,15 @@ func (r *PgTransactionRepository) Save(process entities.Process) error {
 		return err
 	}
 	for _, transaction := range process.Transactions {
+		fmt.Println("Inserting transaction")
 		_, err := db.Exec("INSERT INTO transactions (id, amount, day, month, process_id) VALUES ($1, $2, $3, $4, $5)",
 			transaction.Id, transaction.Amount, transaction.Day, transaction.Month, id)
 		if err != nil {
-			log.Fatal(err)
+			fmt.Println("Error inserting transaction", err)
 			return err
 		}
 	}
+	wg.Done()
 	return nil
 }
 
@@ -49,6 +52,7 @@ func (r *PgTransactionRepository) getConnection() *sql.DB {
 			fmt.Println("Error connecting to the database")
 			panic(err)
 		}
+		fmt.Println("Connected to the database")
 		r.db = db
 	}
 	return r.db

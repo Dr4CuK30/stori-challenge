@@ -1,7 +1,10 @@
 package repositories
 
-import "stori-challenge-v1/domain/entities"
+import (
+	"stori-challenge-v1/domain/entities"
+	"sync"
+)
 
 type TransactionRepository interface {
-	Save(transaction entities.Process) error
+	Save(transaction entities.Process, wg *sync.WaitGroup) error
 }

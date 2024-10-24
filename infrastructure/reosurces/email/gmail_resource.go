@@ -23,7 +23,6 @@ func (r *GmailResource) SendEmail(destinatary string, subjectData string, body s
 	err := smtp.SendMail("smtp.gmail.com:587",
 		smtp.PlainAuth("", senderEmail, password, "smtp.gmail.com"),
 		senderEmail, []string{destinatary}, []byte(message))
-
 	if err != nil {
 		log.Printf("smtp error: %s", err)
 		return err
