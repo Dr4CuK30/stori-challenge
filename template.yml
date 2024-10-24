@@ -1,0 +1,20 @@
+Resources:
+  storiCsvLoader:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Description: 'Lambda function for storiCsvLoader'
+      MemorySize: 128
+      Timeout: 3
+      Handler: bootstrap # Si estás usando Go, debe ser el ejecutable que generas
+      Runtime: provided.al2023  # Si usas Go, adapta el runtime a go1.x
+      Architectures:
+        - arm64  # Adaptado para local (compatible con arquitectura local)
+      EphemeralStorage:
+        Size: 512
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /storiCsvLoader
+            Method: ANY
