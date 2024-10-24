@@ -84,5 +84,11 @@ The following environment variables need to be set:
 - `SENDER_EMAIL` : Sender email (davidsaldarriaga.pardo@gmail.com)
 
 ## Snapshots
+Lambda on AWS
+![snapshot1](static/snapshot1.png)
+Database model
+![snapshot2](static/snapshot2.png)
+Email structure
+![snapshot3](static/snapshot3.png)
 
 
